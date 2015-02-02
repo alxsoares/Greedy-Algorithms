@@ -24,12 +24,25 @@ bool myfunction(Job s1, Job s2) {
     return (s1.finish < s2.finish);
 }
 
-// Find the latest job (in sorted array) that doesn't
+/*  int latestNonConflict(Job arr[], int i) {
+        for (int j=i-1; j>=0; j--)
+            if (arr[j].finish <= arr[i].start)
+                return j;
+        return -1;
+    }  */
+
+// Using binary search to find the latest job (in sorted array) that doesn't
 // conflict with the job[i]
-int latestNonConflict(Job arr[], int i) {
-    for(int j = i-1; j>=0; j--)
-        if(arr[j].finish <= arr[i].start) return j;
-    return -1;
+int latestNonConflict(Job arr[], int lo, int hi, int target) {
+    int mid;
+    while(lo < hi) {
+        mid = lo + (hi - lo + 1) / 2;
+        if(arr[mid].finish <= target) lo = mid;
+        else hi = mid - 1;
+    }
+
+    if(arr[lo].finish > target) return -1;
+    return lo;
 }
 
 // The main function that returns the maximum possible
@@ -47,7 +60,8 @@ int findMaxProfit(Job arr[], int n) {
     for (int i = 1; i < n; i++) {
         // Find profit including the current job
         int inclProf = arr[i].profit;
-        int l = latestNonConflict(arr, i);
+        //int l = latestNonConflict(arr, i);
+        int l = latestNonConflict(arr, 0, i, arr[i].start);
         if(l != -1) inclProf += table[l];
 
         // Store maximum of including and excluding
